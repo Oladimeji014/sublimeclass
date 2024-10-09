@@ -1,0 +1,61 @@
+function fixturesFill(fields){
+    fields.forEach(function(fixture){
+        const elm = jQuery("[name='"+fixture.name+"']");
+        if(elm.attr('type') === 'checkbox'){
+            elm.prop('checked', 'checked');
+        }
+        else if(elm.attr('type') === 'radio'){
+            elm.prop('checked', 'checked');
+        }
+        else{
+            elm.val(fixture.value);
+        }
+    });
+}
+
+function fixturesNames(){
+    let names = [];
+    jQuery('input[name], textarea[name]').each(function(){
+        names.push(
+            {
+                name: jQuery(this).attr('name'),
+                value: ''
+            }
+        )});
+    console.log(JSON.stringify(names));
+}
+
+const fields = [
+    {
+        "name": "name",
+        "value": "Mike Maschinoff"
+    },
+    {
+        "name": "company",
+        "value": "ZeppIT"
+    },
+    {
+        "name": "email",
+        "value": "maschinov@gmail.com"
+    },
+    {
+        "name": "phone",
+        "value": "+38.097.737.80.56"
+    },
+    {
+        "name": "roject_type",
+        "value": "Web"
+    },
+    {
+        "name": "details",
+        "value": "Project details"
+    },
+    {
+        "name": "timeframe",
+        "value": "12"
+    },
+    {
+        "name": "budget",
+        "value": "$111,000"
+    }
+]

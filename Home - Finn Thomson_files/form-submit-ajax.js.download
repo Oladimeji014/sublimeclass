@@ -1,0 +1,79 @@
+jQuery.fn.extend({
+    formSubmit: function () {
+        const form = jQuery(this);
+        const success = form.next('.form-message');
+        form.append('<div class=form-loader>Sending...</div>');
+        grecaptcha.ready(function () {
+            grecaptcha.execute(php_vars.recaptcha_site_key, { action: 'enquiry' }).then(function (token) {
+                form.find('#recaptchaResponse').val(token);
+                const formData = new FormData(form[0]);
+                jQuery.ajax({
+                    url: php_vars.mail_script,
+                    type: 'post',
+                    dataType: 'json',
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        // button.prop('disabled', false).html(buttonText);
+                        form.find('.form-loader').remove();
+                        if (data.status === true) {
+                            clearForm(form);
+                            success.show();
+                        } else {
+                            alert('Some errors happens, please try again');
+                        }
+                    },
+                    error: function (xhr, err) {
+                        alert('Some errors happens, please try again');
+                        // button.prop('disabled', false).html(buttonText);
+                        form.find('.form-loader').remove();
+                    }
+                });
+            })
+        });
+        return false;
+    }
+});
+
+function clearForm(form) {
+    // iterate over all of the inputs for the form
+    // element that was passed in
+    jQuery('#solution').value = '';
+    $(':input', form).each(function () {
+        let type = this.type;
+        let disabled = jQuery(this).prop('disable');
+        let tag = this.tagName.toLowerCase(); // normalize case
+        // it's ok to reset the value attr of text inputs,
+        // password inputs, and textareas
+        if (type === 'text' || type === 'password' || type === 'email' || type === 'tel' || tag === 'textarea' || type === 'file')
+            this.value = "";
+        // checkboxes and radios need to have their checked state cleared
+        // but should *not* have their 'value' changed
+        else if (type === 'checkbox' || type === 'radio')
+            this.checked = false;
+        // select elements need to have their 'selectedIndex' property set to -1
+        // (this works for both single and multiple select elements)
+        else if (tag === 'select')
+            if (!disabled) {
+                this.selectedIndex = -1;
+            }
+    });
+};
+
+jQuery(document).ready(function () {
+
+    jQuery(".validate").each(function () {
+        jQuery(this).validate({
+            errorPlacement: (error, element) => {
+
+            },
+            submitHandler: function (form) {
+                jQuery(form).formSubmit();
+            },
+            ignore: []
+        });
+    });
+});
+
